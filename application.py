@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 application = Flask(__name__)
 
+app = application
+
 """app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -11,7 +13,7 @@ db = SQLAlchemy(app)
 from models import Client"""
 
 #Index
-@application.route("/")
+@app.route("/")
 def index():
     return "This is the app index"
 
@@ -59,4 +61,4 @@ def get_by_name(name_):
 	    return(str(e))"""
 
 if __name__ == '__main__':
-    application.run()
+    app.run()
