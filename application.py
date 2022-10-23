@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 """app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -11,7 +11,7 @@ db = SQLAlchemy(app)
 from models import Client"""
 
 #Index
-@app.route("/")
+@application.route("/")
 def index():
     return "This is the app index"
 
@@ -59,4 +59,4 @@ def get_by_name(name_):
 	    return(str(e))"""
 
 if __name__ == '__main__':
-    app.run()
+    application.run()
