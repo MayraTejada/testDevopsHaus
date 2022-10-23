@@ -6,11 +6,11 @@ application = Flask(__name__)
 
 app = application
 
-"""app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-from models import Client"""
+from models import Client
 
 #Index
 @app.route("/")
@@ -18,7 +18,7 @@ def index():
     return "This is the app index"
 
 #Add client and money
-"""@app.route("/add")
+@app.route("/add")
 def add_client():
     name=request.args.get('name')
     money=request.args.get('money')
@@ -58,7 +58,7 @@ def get_by_name(name_):
         client=Client.query.filter_by(name=name_).first()
         return jsonify(client.serialize())
     except Exception as e:
-	    return(str(e))"""
+	    return(str(e))
 
 if __name__ == '__main__':
     app.run()
