@@ -6,11 +6,11 @@ application = Flask(__name__)
 
 app = application
 
-app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object("config.Config")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-from models import Client
+import models
 
 #Index
 @app.route("/")
@@ -23,7 +23,7 @@ def add_client():
     name=request.args.get('name')
     money=request.args.get('money')
     try:
-        client=Client(
+        client=models.Client(
             name=name,
             money=money
         )
@@ -37,7 +37,7 @@ def add_client():
 @app.route("/getall")
 def get_all():
     try:
-        clients=Client.query.all()
+        clients=models.Client.query.all()
         return  jsonify([e.serialize() for e in clients])
     except Exception as e:
 	    return(str(e))
@@ -46,7 +46,7 @@ def get_all():
 @app.route("/get/<id_>")
 def get_by_id(id_):
     try:
-        client=Client.query.filter_by(id=id_).first()
+        client=models.Client.query.filter_by(id=id_).first()
         return jsonify(client.serialize())
     except Exception as e:
 	    return(str(e))
@@ -55,7 +55,7 @@ def get_by_id(id_):
 @app.route("/getn/<name_>")
 def get_by_name(name_):
     try:
-        client=Client.query.filter_by(name=name_).first()
+        client=models.Client.query.filter_by(name=name_).first()
         return jsonify(client.serialize())
     except Exception as e:
 	    return(str(e))

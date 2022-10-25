@@ -1,12 +1,11 @@
-from application import db
-
-class Client(db.Model):
+import application 
+class Client(application.db.Model):
     __tablename__ = 'clients'
 
     #Fields
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    money = db.Column(db.Integer)
+    id = application.db.Column(application.db.Integer, primary_key=True)
+    name = application.db.Column(application.db.String())
+    money = application.db.Column(application.db.Integer)
 
     #Initialize database
     def __init__(self, name, money):
