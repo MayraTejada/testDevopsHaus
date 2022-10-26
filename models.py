@@ -1,11 +1,13 @@
-import application 
-class Client(application.db.Model):
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+
+class Client(db.Model):
     __tablename__ = 'clients'
 
     #Fields
-    id = application.db.Column(application.db.Integer, primary_key=True)
-    name = application.db.Column(application.db.String())
-    money = application.db.Column(application.db.Integer)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    money = db.Column(db.Integer)
 
     #Initialize database
     def __init__(self, name, money):
