@@ -1,3 +1,5 @@
+#No me funcionó :(
+
 Resources:
   myInstaceDB:
     Type: AWS::RDS::DBInstance
@@ -14,7 +16,7 @@ Resources:
   MyRepository: 
     Type: AWS::ECR::Repository
     Properties: 
-      #RepositoryName: "testapihaus"
+      RepositoryName: "haus"
       RepositoryPolicyText: 
         Version: "2012-10-17"
         Statement: 
@@ -23,7 +25,9 @@ Resources:
             Effect: Allow
             Principal: 
               AWS:
-                - !Sub arn:aws:iam::${AWS::AccountId}:user/iamadmin                
+                - !Sub arn:aws:iam::${AWS::AccountId}:user/iamadmin
+                - !GetAtt ServiceRole.Arn
+
             Action: 
               - "ecr:GetDownloadUrlForLayer"
               - "ecr:BatchGetImage"
@@ -38,40 +42,53 @@ Resources:
       ServiceName: python-app
       SourceConfiguration:
         AuthenticationConfiguration:
-          ConnectionArn: "arn:aws:apprunner:us-east-1:603031285009:connection/conexionhaus/d7dd427d6cc845bdb9c2f5e92a52a1fb"
-        AutoDeploymentsEnabled: true
-        CodeRepository:
-          RepositoryUrl: "https://github.com/MayraTejada/testDevopsHaus.git"
-          SourceCodeVersion:
-            Type: BRANCH
-            Value: main
-          CodeConfiguration:
-            ConfigurationSource: API
-            CodeConfigurationValues:
-              Runtime: PYTHON_3
-              BuildCommand: "pip install -r ./application/requirements.txt"
-              StartCommand: "python ./application/app.py"
-              Port: 5000
-              RuntimeEnvironmentVariables:
-                -
-                  Name: NAME
-                  Value: Jane
+          ConnectionArn: !GetAtt ServiceRole.Arn
+
+        #   ConnectionArn: "arn:aws:apprunner:us-east-1:603031285009:connection/conexionhaus/d7dd427d6cc845bdb9c2f5e92a52a1fb"
+        AutoDeploymentsEnabled: false
+        ImageRepository:
+          ImageConfiguration:
+            Port: 5000
+          ImageIdentifier: !Join
+            - ''
+            - - !Ref AWS::AccountId
+              - '.dkr.ecr.'
+              - !Ref AWS::Region
+              - '.amazonaws.com/haus:latest'
+          ImageRepositoryType: ECR
+
+        # CodeRepository:
+        #   RepositoryUrl: "https://github.com/MayraTejada/testDevopsHaus.git"
+        #   SourceCodeVersion:
+        #     Type: BRANCH
+        #     Value: main
+        #   CodeConfiguration:
+        #     ConfigurationSource: API
+        #     CodeConfigurationValues:
+        #       Runtime: PYTHON_3
+        #       BuildCommand: "pip install -r ./application/requirements.txt"
+        #       StartCommand: "python ./application/app.py"
+        #       Port: 5000
+        #       RuntimeEnvironmentVariables:
+        #         -
+        #           Name: NAME
+        #           Value: Jane
       InstanceConfiguration:
         Cpu: 1 vCPU
         Memory: 2 GB
 
-  # ServiceRole:
-  #   Type: 'AWS::IAM::Role'
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Effect: Allow
-  #           Principal:
-  #             Service:
-  #               - codebuild.amazonaws.com
-  #           Action:
-  #             - 'sts:AssumeRole'
+  ServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - apprunner.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
 
   # Project:
   #   Type: AWS::CodeBuild::Project
