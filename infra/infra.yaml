@@ -1,0 +1,96 @@
+Resources:
+  myInstaceDB:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '50'
+      DBInstanceIdentifier: dbinstanceHaus
+      DBName: mydb
+      DBInstanceClass: db.t3.micro
+      Engine: MySQL
+      EngineVersion: "5.7.39"
+      MasterUsername: user
+      MasterUserPassword: password
+
+  MyRepository: 
+    Type: AWS::ECR::Repository
+    Properties: 
+      #RepositoryName: "testapihaus"
+      RepositoryPolicyText: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Sid: AllowPushPull
+            Effect: Allow
+            Principal: 
+              AWS:
+                - !Sub arn:aws:iam::${AWS::AccountId}:user/iamadmin                
+            Action: 
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
+  MyAppRunner: 
+    Type: AWS::AppRunner::Service
+    Properties:
+      ServiceName: python-app
+      SourceConfiguration:
+        AuthenticationConfiguration:
+          ConnectionArn: "arn:aws:apprunner:us-east-1:603031285009:connection/conexionhaus/d7dd427d6cc845bdb9c2f5e92a52a1fb"
+        AutoDeploymentsEnabled: true
+        CodeRepository:
+          RepositoryUrl: "https://github.com/MayraTejada/testDevopsHaus.git"
+          SourceCodeVersion:
+            Type: BRANCH
+            Value: main
+          CodeConfiguration:
+            ConfigurationSource: API
+            CodeConfigurationValues:
+              Runtime: PYTHON_3
+              BuildCommand: "pip install -r ./application/requirements.txt"
+              StartCommand: "python ./application/app.py"
+              Port: 5000
+              RuntimeEnvironmentVariables:
+                -
+                  Name: NAME
+                  Value: Jane
+      InstanceConfiguration:
+        Cpu: 1 vCPU
+        Memory: 2 GB
+
+  # ServiceRole:
+  #   Type: 'AWS::IAM::Role'
+  #   Properties:
+  #     AssumeRolePolicyDocument:
+  #       Version: "2012-10-17"
+  #       Statement:
+  #         - Effect: Allow
+  #           Principal:
+  #             Service:
+  #               - codebuild.amazonaws.com
+  #           Action:
+  #             - 'sts:AssumeRole'
+
+  # Project:
+  #   Type: AWS::CodeBuild::Project
+  #   Properties:
+  #     Name: myProjectName
+  #     Description: A description about my project
+  #     ServiceRole: !GetAtt ServiceRole.Arn
+  #     Artifacts:
+  #       Type: no_artifacts
+  #     Environment:
+  #       Type: LINUX_CONTAINER
+  #       ComputeType: BUILD_GENERAL1_SMALL
+  #       Image: aws/codebuild/java:openjdk-8
+  #       # EnvironmentVariables:
+  #       # - Name: varName
+  #       #   Type: varType
+  #       #   Value: varValue
+  #     Source:
+  #       Location: https://github.com/MayraTejada/testDevopsHaus.git
+  #       Type: GITHUB
+  #     TimeoutInMinutes: 10
+      

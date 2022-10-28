@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+
 db = SQLAlchemy()
 
 class Client(db.Model):
@@ -6,13 +7,14 @@ class Client(db.Model):
 
     #Fields
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(150))
+    name = db.Column(db.String(80))
     money = db.Column(db.Integer)
-
+    
     #Initialize database
     def __init__(self, name, money):
         self.name = name
         self.money = money
+        
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -22,5 +24,5 @@ class Client(db.Model):
         return {
             'id': self.id,
             'name': self.name,
-            'money': self.money
+            'money': self.money,
         }

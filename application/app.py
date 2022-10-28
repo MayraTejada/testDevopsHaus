@@ -1,15 +1,17 @@
 import os
 from flask import Flask, request, jsonify
+from flask_migrate import Migrate
 
-application = Flask(__name__)
 
-app = application
+app = Flask(__name__)
 app.config.from_object("config.DevelopmentConfig")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-from models import db, Client
+from models import Client, db
 
 db.init_app(app)
+
+migrate = Migrate(app, db)
 
 #Index
 @app.route("/")
@@ -24,7 +26,7 @@ def add_client():
     try:
         client=Client(
             name=name,
-            money=money
+            money=money,
         )
         db.session.add(client)
         db.session.commit()
